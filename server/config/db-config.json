@@ -1,0 +1,11 @@
+
+{
+  "username": "postgres",
+  "password": "",
+  "database": "chatting",
+  "host": "localhost",
+  "port": 5432,
+  "dialect": "postgres",
+  "operatorsAliases": false
+
+}
