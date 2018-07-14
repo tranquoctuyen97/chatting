@@ -1,6 +1,7 @@
 'use strict';
 import {User,Op} from '../models/index';
 import Sequelize from 'sequelize';
+import {response} from '../helpers/index'
 import bcrypt from 'bcrypt';
 
 export default class UserController {
@@ -11,14 +12,11 @@ export default class UserController {
                     ['createdAt', 'DESC']
                 ]
             });
-            return res.status(200).json({
-                success: true,
-                data: users
-            });
+            response.returnSuccess(res, users);
         } catch (e) {
             return res.status(400).json({
                 success: false,
-                error: 'List User is error !'
+                error: e.message
             });
         }
     };
