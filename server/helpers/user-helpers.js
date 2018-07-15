@@ -1,20 +1,21 @@
 'use strict';
-import bcrypt from "bcrypt";
+import Bcrypt from "bcrypt";
 
 export default class UserHelper  {
      checkPassword = (password, hash) => {
         return new Promise((resolve, reject) => {
-            bcrypt.compare(password, hash, function (err, res) {
+            Bcrypt.compare(password, hash, function (err, res) {
                 if (err) {
                     return reject(err);
+                } else {
+                    return resolve(res);
                 }
-                return resolve(res);
             });
         });
     };
      hashPassword = (password) => {
         return new Promise((resolve, reject) => {
-            bcrypt.hash(password, 10, function (err, hash) {
+            Bcrypt.hash(password, 10, function (err, hash) {
                 if (err) {
                     return reject(err);
                 }

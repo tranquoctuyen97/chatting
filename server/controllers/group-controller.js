@@ -26,10 +26,8 @@ export default class UserController {
     };
     createGroup = async (req, res, next) => {
         try {
-            const { name, avatar, type, authorId } = req.body;
-            if (authorId === undefined) {
-                return response.returnError(res, new Error('authorId is required field'));
-            }
+            const user = req.user;
+            const { name, avatar, type } = req.body;
             if (!type) {
                 return response.returnError(res, new Error('type is required field'));
             }
@@ -37,7 +35,7 @@ export default class UserController {
                 name,
                 avatar,
                 type,
-                authorId
+                authorId: user.id
             });
             response.returnSuccess(res, group);
         } catch (e) {
@@ -88,17 +86,15 @@ export default class UserController {
     };
     updateGroup = async (req, res, next) => {
         try {
+            const user = req.user;
             const { id } = req.params;
-            const { name, avatar, type, authorId } = req.body;
-            if (authorId === undefined) {
-                return response.returnError(res, new Error('authorId is invaild'));
-            }
+            const { name, avatar, type } = req.body;
             const groups = await  Group.update(
                 {
                     name,
                     avatar,
                     type,
-                    authorId
+                    authorId: user.id
                 },
                 {
                     where: {

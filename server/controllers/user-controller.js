@@ -1,6 +1,7 @@
 'use strict';
 import {User, Op, Block} from '../models/index';
-import {response, UserHelper} from '../helpers/index'
+import {response, UserHelper, JWTHelper} from '../helpers';
+
 
 export default class UserController {
     getListUser = async (req, res, next) => {
@@ -16,7 +17,6 @@ export default class UserController {
                         required: false
                     }
                 ],
-
             });
             response.returnSuccess(res, users);
         } catch (e) {
@@ -41,49 +41,33 @@ export default class UserController {
                 password: hashPassword,
                 address
             });
-            return res.status(200).json({
-                success: true,
-                data: user
-            });
+            return response.returnSuccess(res, user);
         } catch (e) {
-            return res.status(400).json({
-                success: true,
-                error: e.message
-            });
+            return response.returnError(res, e);
         }
     };
     updateUser = async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const user = req.user;
             const {username, address} = req.body;
-            const user = await User.update(
+            const users = await User.update(
                 {
                     username,
                     address
                 },
                 {
                     where: {
-                        id
+                        id: user.id
                     },
                     returning: true
                 }
             );
-            if (user[0] === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'update user error !'
-                });
+            if (users[0] === 0) {
+                return response.returnError(res, new Error('update user error'));
             }
-            ;
-            return res.status(200).json({
-                success: true,
-                data: user[1]
-            });
+            return response.returnSuccess(res, users[1]);
         } catch (e) {
-            return res.status(400).json({
-                success: false,
-                error: e.message
-            });
+            return response.returnError(res, e);
         }
     };
     deleteUser = async (req, res, next) => {
@@ -94,15 +78,9 @@ export default class UserController {
                     id
                 }
             });
-            return res.status(200).json({
-                success: true,
-                data: 'Deleted 1 user'
-            });
+            return response.returnSuccess(res, true);
         } catch (e) {
-            return res.status(400).json({
-                success: false,
-                data: e.message
-            });
+            return response.returnError(res, e);
         }
     };
     getOneUser = async (req, res, next) => {
@@ -110,27 +88,15 @@ export default class UserController {
             const {id} = req.params;
             const user = await User.findById(id);
             if (!user) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'User is not found'
-                });
+                return response.returnError(res, new Error('User is not found'));
             }
-            ;
-            return res.status(200).json({
-                success: true,
-                data: user
-            });
-
+            return response.returnSuccess(res, user);
         } catch (e) {
-            return res.status(400).json({
-                success: false,
-                error: e.message
-            });
+            return response.returnError(res, e);
         }
     };
     getUserByUsername = async (req, res, next) => {
         try {
-
             const {username} = req.params;
             const user = await User.find({
                 where: {
@@ -140,35 +106,21 @@ export default class UserController {
                 }
             });
             if (user.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'User is not exist'
-                });
+                return response.returnError(res, new Error('User is not exist'));
             }
-            return res.status(200).json({
-                success: true,
-                data: user
-            });
+            return response.returnSuccess(res, user);
 
         } catch (e) {
-            return res.status(400).json({
-                success: false,
-                error: e.message
-            });
-
+            return response.returnError(res, e);
         }
     };
 
     changePassword = async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const user = req.user;
             const {password, newPassword} = req.body;
-            const user = await  User.findById(id);
             if (await UserHelper.checkPassword(password, user.password) === false) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Password is not coincide !'
-                });
+                return response.returnError(res, new Error('Password is not coincide '));
             }
             const hash = await UserHelper.hashPassword(newPassword);
             const update = await User.update(
@@ -182,20 +134,14 @@ export default class UserController {
                     returning: true
                 }
             );
-            return res.status(200).json({
-                success: true,
-                data: update[1]
-            });
+            return response.returnSuccess(res, update[1]);
         } catch (e) {
-            return res.status(400).json({
-                success: false,
-                error: e.message
-            });
+            return response.returnError(res, e);
         }
     };
     login = async (req, res, next) => {
         try {
-            const { username, password } = req.body;
+            const {username, password} = req.body;
             if (username === undefined) {
                 return response.returnError(res, new Error('username is invalid !'));
             }
@@ -205,16 +151,23 @@ export default class UserController {
             const user = await User.find({
                 where: {
                     username
-                }
+                },
+                attributes: ['id', 'username', 'password']
             });
             if (!user) {
                 return response.returnError(res, new Error('User is not exist'));
             }
-            const  isPassword = await UserHelper.checkPassword(password, user.password);
-            if (!isPassword ) {
-                return response.returnError(res, new Error('Password is false'));
+            const isPassword = await UserHelper.checkPassword(password, user.password);
+            if (!isPassword) {
+                return response.returnError(res, new Error('Password is wrong '));
             }
-            return response.returnSuccess(res, true);
+            const token = await JWTHelper.sign('Tran_Quoc_Tuyen_97', {
+                id: user.id,
+                username: user.username
+            });
+            return response.returnSuccess(res, {
+                token
+            });
         } catch (e) {
             return response.returnError(res, e);
         }
