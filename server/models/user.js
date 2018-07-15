@@ -75,6 +75,10 @@ module.exports = (sequelize, DataTypes) => {
             as: 'groups',
             foreignKey: 'authorId'
         });
+        User.hasMany(models.Block, {
+           as: 'blocks',
+           foreignKey: 'authorId'
+        });
     };
 
     // User.associate = (models) => {

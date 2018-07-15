@@ -5,7 +5,7 @@ import {response} from '../helpers/index'
 export default class BlockController {
     getListUsers = async (req, res, next) => {
         try {
-            const Block = await User.hasMany(Block, {as: 'authors'});
+            // const Block = await User.hasMany(Block, {as: 'authors'});
             const users = await User.findAll({
 
                 order: [
@@ -13,16 +13,11 @@ export default class BlockController {
                 ],
                 attributes:
                     ['username','password'],
-                include: [
-                    {
-                        model: Block,
-                        as: 'authors'
-                    }
-                ]
+
 
 
             });
-            response.returnSuccess(res, users);
+            return response.returnSuccess(res, users);
         } catch (e) {
             return response.returnError(res, e);
         }

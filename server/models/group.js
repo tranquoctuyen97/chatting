@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.UUID
             },
             type: {
-                type: DataTypes.STRING
+                type: DataTypes.ENUM,
+                values: ['private', 'group']
             },
             avatar: {
                 type: DataTypes.STRING

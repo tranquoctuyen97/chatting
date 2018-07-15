@@ -1,8 +1,6 @@
 'use strict';
-import {User,Op} from '../models/index';
-import Sequelize from 'sequelize';
-import {response} from '../helpers/index'
-import bcrypt from 'bcrypt';
+import {User, Op, Block} from '../models/index';
+import {response, UserHelper} from '../helpers/index'
 
 export default class UserController {
     getListUser = async (req, res, next) => {
@@ -10,7 +8,15 @@ export default class UserController {
             const users = await User.findAll({
                 order: [
                     ['createdAt', 'DESC']
-                ]
+                ],
+                include: [
+                    {
+                        model: Block,
+                        as: 'blocks',
+                        required: false
+                    }
+                ],
+
             });
             response.returnSuccess(res, users);
         } catch (e) {
@@ -29,7 +35,7 @@ export default class UserController {
                     error: 'Address is invalid !'
                 });
             }
-            const hashPassword = await this.hashPassword(password);
+            const hashPassword = await UserHelper.hashPassword(password);
             const user = await User.create({
                 username,
                 password: hashPassword,
@@ -122,10 +128,11 @@ export default class UserController {
             });
         }
     };
-    getUserbyUserName = async (req, res, next) => {
+    getUserByUsername = async (req, res, next) => {
         try {
+
             const {username} = req.params;
-            const user = await User.findAll({
+            const user = await User.find({
                 where: {
                     username: {
                         [Op.iLike]: '%' + username
@@ -138,7 +145,6 @@ export default class UserController {
                     error: 'User is not exist'
                 });
             }
-            ;
             return res.status(200).json({
                 success: true,
                 data: user
@@ -152,29 +158,19 @@ export default class UserController {
 
         }
     };
-    hashPassword = (password) => {
-        return new Promise((resolve, reject) => {
-            bcrypt.hash(password, 10, function (err, hash) {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(hash);
-            });
-        });
 
-    };
     changePassword = async (req, res, next) => {
         try {
             const {id} = req.params;
-            const {password, newpassword} = req.body;
-            const user = await  this.getUserbyId(id);
-            if (await this.checkPassword(password, user.password) === false) {
+            const {password, newPassword} = req.body;
+            const user = await  User.findById(id);
+            if (await UserHelper.checkPassword(password, user.password) === false) {
                 return res.status(400).json({
                     success: false,
                     error: 'Password is not coincide !'
                 });
             }
-            const hash = await this.hashPassword(newpassword);
+            const hash = await UserHelper.hashPassword(newPassword);
             const update = await User.update(
                 {
                     password: hash
@@ -197,23 +193,30 @@ export default class UserController {
             });
         }
     };
-
-    checkPassword = (password, hash) => {
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(password, hash, function (err, res) {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(res);
-            });
-        });
-    };
-    getUserbyId = async (id) => {
+    login = async (req, res, next) => {
         try {
-            const user = await User.findById(id);
-            return user;
+            const { username, password } = req.body;
+            if (username === undefined) {
+                return response.returnError(res, new Error('username is invalid !'));
+            }
+            if (password === undefined) {
+                return response.returnError(res, new Error('password is invalid !'));
+            }
+            const user = await User.find({
+                where: {
+                    username
+                }
+            });
+            if (!user) {
+                return response.returnError(res, new Error('User is not exist'));
+            }
+            const  isPassword = await UserHelper.checkPassword(password, user.password);
+            if (!isPassword ) {
+                return response.returnError(res, new Error('Password is false'));
+            }
+            return response.returnSuccess(res, true);
         } catch (e) {
-            return null;
+            return response.returnError(res, e);
         }
     };
 

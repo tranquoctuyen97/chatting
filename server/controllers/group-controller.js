@@ -1,8 +1,8 @@
 'use strict';
 import {Group, User} from '../models/index';
 import {response} from '../helpers';
+import UserHelper from "../helpers/user-helpers";
 export default class UserController {
-
     getListGroup = async (req, res, next) => {
         try {
             const groups = await Group.findAll({
@@ -26,14 +26,14 @@ export default class UserController {
     };
     createGroup = async (req, res, next) => {
         try {
-            const { name, avatar, type, authorId } = req.params;
+            const { name, avatar, type, authorId } = req.body;
             if (authorId === undefined) {
-                response.returnError(res, new Error('authorId is required field'));
+                return response.returnError(res, new Error('authorId is required field'));
             }
             if (!type) {
-                response.returnError(res, new Error('type is required field'));
+                return response.returnError(res, new Error('type is required field'));
             }
-            const group = Group.create({
+            const group = await Group.create({
                 name,
                 avatar,
                 type,
@@ -43,7 +43,77 @@ export default class UserController {
         } catch (e) {
             response.returnError(res, e);
         }
+    };
+    getGroupById = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const group = await Group.findById(id);
+            if (!group) {
+                return response.returnError(res, new Error('Group is invaild'));
+            }
+            return response.returnSuccess(res, group);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
+    };
+    getGroupByName = async (req, res, next) => {
+        try {
+            const { name } = req.params;
+            const group = await Group.find({
+                where: {
+                    name
+                }
+            });
+            if (!group) {
+                return response.returnError(res, new Error('Group is invaild'));
+            }
+            return response.returnSuccess(res, group);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
+    };
+    deleteGroup = async(req, res, next) => {
+        try {
+            const { id } = req.params;
+            await Group.destroy({
+                where:{
+                    id
+                }
+            });
+            return response.returnSuccess(res, 'Deleted 1 group');
+        } catch (e) {
+            return response.returnError(res, e);
+        }
 
+    };
+    updateGroup = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const { name, avatar, type, authorId } = req.body;
+            if (authorId === undefined) {
+                return response.returnError(res, new Error('authorId is invaild'));
+            }
+            const groups = await  Group.update(
+                {
+                    name,
+                    avatar,
+                    type,
+                    authorId
+                },
+                {
+                    where: {
+                        id
+                    }
+                }
+            );
+            if (groups[0] === 0) {
+                return response.returnError(res, new Error('update group error'));
+            }
+            return response.returnSuccess(res, groups[1]);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
     }
+    ;
 
 }
