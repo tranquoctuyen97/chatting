@@ -9,7 +9,7 @@ module.exports = (app) => {
 		.get([Authentication.isAuth],groupController.getListGroup)
 		.post([Authentication.isAuth],groupController.createGroup);
     app.route('/group/:id')
-        .get([Authentication.isAuth],groupController.getGroupById)
+		.get([Authentication.isAuth],groupController.getOneGroup)
     	.delete([Authentication.isAuth],groupController.deleteGroup)
 		.put([Authentication.isAuth],groupController.updateGroup);
     app.route('/group/search/:name')

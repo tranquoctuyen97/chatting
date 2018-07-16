@@ -1,7 +1,6 @@
 'use strict';
-import {Group, User} from '../models/index';
+import {Group, User, Block, MemberGroup} from '../models';
 import {response} from '../helpers';
-import UserHelper from "../helpers/user-helpers";
 export default class UserController {
     getListGroup = async (req, res, next) => {
         try {
@@ -42,18 +41,6 @@ export default class UserController {
             response.returnError(res, e);
         }
     };
-    getGroupById = async (req, res, next) => {
-        try {
-            const { id } = req.params;
-            const group = await Group.findById(id);
-            if (!group) {
-                return response.returnError(res, new Error('Group is invalid'));
-            }
-            return response.returnSuccess(res, group);
-        } catch (e) {
-            return response.returnError(res, e);
-        }
-    };
     getGroupByName = async (req, res, next) => {
         try {
             const { name } = req.params;
@@ -75,14 +62,6 @@ export default class UserController {
             const user = req.user;
             const authorId = user.id;
             const { id } = req.params;
-            // const group = await  Group.find({
-            //     where: {
-            //         authorId: user.id
-            //     }
-            // });
-            // if (group.authorId !== id){
-            //     return response.returnError(res, new Error('You are not admin !'));
-            // }
            const data = await Group.destroy({
                 where:{
                     id,
@@ -120,7 +99,26 @@ export default class UserController {
         } catch (e) {
             return response.returnError(res, e);
         }
+    };
+    getOneGroup = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const group = await  Group.find({
+                where:{
+                    id
+                },
+                include: [
+                    {
+                        model: MemberGroup,
+                        as: 'members',
+                        required: false
+                    }
+                ]
+            });
+            return response.returnSuccess(res, group);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
     }
-    ;
 
 }

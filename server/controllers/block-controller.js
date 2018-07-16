@@ -19,6 +19,31 @@ export default class BlockController {
             return response.returnError(res, e);
         }
     };
+    createGroupBlock = async (req, res, next) => {
+        try {
+            const  user = req.user;
+            const { id ,groupId } = req.params;
+            console.log(user.id);
+            // console.log(groupId);
+            const author = await Group.find({
+                where: {
+                    id: groupId,
+                    authorId: user.id
+                }
+            });
+
+            if (!author) {
+                return response.returnError(res, new Error('author is not admin group '));
+            }
+            const block = await Block.create({
+                authorId: id,
+                groupId
+            });
+            return response.returnSuccess(res, block);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
+    };
 
 
 

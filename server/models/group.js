@@ -51,27 +51,17 @@ module.exports = (sequelize, DataTypes) => {
             // }
         }
     );
-
-    // Association
-
-    // Group.associate = (models) => {
-    //     Group.hasMany(models.MemberGroup, {
-    //         as: 'memeber-group',
-    //         foreignKey: 'userId'
-    //     });
-    // };
-
     Group.associate = (models) => {
         Group.belongsTo(models.User, {
             as: 'author',
             foreignKey: 'authorId',
             onDelete: 'CASCADE'
         });
+        Group.hasMany(models.MemberGroup, {
+            as: 'members',
+            foreignKey: 'userId'
+        });
+
     };
-
-    // Static function
-
-    // Hooks
-
     return Group;
 };

@@ -1,5 +1,5 @@
 'use strict';
-import {User, Op, Block} from '../models/index';
+import {User, Op, Block, Group} from '../models/index';
 import {response, UserHelper, JWTHelper} from '../helpers';
 
 
@@ -160,7 +160,7 @@ export default class UserController {
                 where: {
                     username
                 },
-                attributes: ['id', 'username', 'password']
+                attributes: ['id', 'username', 'password', 'role']
             });
             if (!user) {
                 return response.returnError(res, new Error('User is not exist'));
@@ -171,7 +171,8 @@ export default class UserController {
             }
             const token = await JWTHelper.sign('Tran_Quoc_Tuyen_97', {
                 id: user.id,
-                username: user.username
+                username: user.username,
+                role: user.role
             });
             return response.returnSuccess(res, {
                 token
@@ -180,5 +181,4 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
-
 }
