@@ -1,11 +1,12 @@
 'use strict';
 
 import {blockController} from '../controllers/index';
+import {Authentication} from '../middlewares';
 
 module.exports = (app) => {
 
 	app.route('/blocks')
-		.get(blockController.getListUsers);
+		.post([Authentication.isAuth],blockController.createBlock);
 
 
 

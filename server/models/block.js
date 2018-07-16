@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
             groupId: {
                 type: DataTypes.UUID
             },
+            userId: {
+               type: DataTypes.UUID
+            },
             createdAt: {
                 type: DataTypes.DATE
             },

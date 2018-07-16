@@ -3,21 +3,18 @@ import {User,Op,Block,Group} from '../models/index';
 import {response} from '../helpers/index'
 
 export default class BlockController {
-    getListUsers = async (req, res, next) => {
+    createBlock = async (req, res, next) => {
         try {
-            // const Block = await User.hasMany(Block, {as: 'authors'});
-            const users = await User.findAll({
-
-                order: [
-                    ['createdAt', 'DESC']
-                ],
-                attributes:
-                    ['username','password'],
-
-
+            const {userId,groupId} = req.body;
+            const user = req.user;
+            console.log(user)
+            const block = await Block.create({
+                userId,
+                groupId,
+                authorId: user.id
 
             });
-            return response.returnSuccess(res, users);
+            return response.returnSuccess(res, block);
         } catch (e) {
             return response.returnError(res, e);
         }

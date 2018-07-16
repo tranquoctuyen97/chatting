@@ -1,15 +1,18 @@
 'use strict';
 import Bcrypt from "bcrypt";
+import {User} from '../models';
 
 export default class UserHelper  {
      checkPassword = (password, hash) => {
         return new Promise((resolve, reject) => {
+            console.log(password);
+            console.log(hash);
             Bcrypt.compare(password, hash, function (err, res) {
                 if (err) {
                     return reject(err);
-                } else {
-                    return resolve(res);
                 }
+                    return resolve(res);
+
             });
         });
     };
@@ -24,4 +27,16 @@ export default class UserHelper  {
         });
 
     };
+     findUserbyId = async (id) => {
+         try {
+             const user = User.find({
+                where: {
+                    id
+                }
+             });
+             return user;
+         } catch (e) {
+            return null;
+         }
+     }
 }

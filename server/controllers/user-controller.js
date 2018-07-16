@@ -4,6 +4,7 @@ import {response, UserHelper, JWTHelper} from '../helpers';
 
 
 export default class UserController {
+
     getListUser = async (req, res, next) => {
         try {
             const users = await User.findAll({
@@ -18,7 +19,7 @@ export default class UserController {
                     }
                 ],
             });
-            response.returnSuccess(res, users);
+            return response.returnSuccess(res, users);
         } catch (e) {
             return res.status(400).json({
                 success: false,
@@ -26,6 +27,7 @@ export default class UserController {
             });
         }
     };
+
     createUser = async (req, res, next) => {
         try {
             const {username, password, address} = req.body;
@@ -46,6 +48,7 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
+
     updateUser = async (req, res, next) => {
         try {
             const user = req.user;
@@ -70,6 +73,7 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
+
     deleteUser = async (req, res, next) => {
         try {
             const {id} = req.params;
@@ -83,6 +87,7 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
+
     getOneUser = async (req, res, next) => {
         try {
             const {id} = req.params;
@@ -95,6 +100,7 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
+
     getUserByUsername = async (req, res, next) => {
         try {
             const {username} = req.params;
@@ -109,7 +115,6 @@ export default class UserController {
                 return response.returnError(res, new Error('User is not exist'));
             }
             return response.returnSuccess(res, user);
-
         } catch (e) {
             return response.returnError(res, e);
         }
@@ -118,9 +123,11 @@ export default class UserController {
     changePassword = async (req, res, next) => {
         try {
             const user = req.user;
-            const {password, newPassword} = req.body;
-            if (await UserHelper.checkPassword(password, user.password) === false) {
-                return response.returnError(res, new Error('Password is not coincide '));
+            const { password, newPassword } = req.body;
+            const users = await UserHelper.findUserbyId(user.id);
+            const isValid = await UserHelper.checkPassword(password, users.password);
+            if (isValid === false) {
+                return response.returnError(res, new Error('Password is not coincide'));
             }
             const hash = await UserHelper.hashPassword(newPassword);
             const update = await User.update(
@@ -129,7 +136,7 @@ export default class UserController {
                 },
                 {
                     where: {
-                        id
+                        id: user.id
                     },
                     returning: true
                 }
@@ -139,6 +146,7 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
+
     login = async (req, res, next) => {
         try {
             const {username, password} = req.body;
@@ -172,6 +180,5 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
-
 
 }

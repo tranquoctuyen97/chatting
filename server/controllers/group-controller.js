@@ -47,7 +47,7 @@ export default class UserController {
             const { id } = req.params;
             const group = await Group.findById(id);
             if (!group) {
-                return response.returnError(res, new Error('Group is invaild'));
+                return response.returnError(res, new Error('Group is invalid'));
             }
             return response.returnSuccess(res, group);
         } catch (e) {
@@ -72,13 +72,24 @@ export default class UserController {
     };
     deleteGroup = async(req, res, next) => {
         try {
+            const user = req.user;
+            const authorId = user.id;
             const { id } = req.params;
-            await Group.destroy({
+            // const group = await  Group.find({
+            //     where: {
+            //         authorId: user.id
+            //     }
+            // });
+            // if (group.authorId !== id){
+            //     return response.returnError(res, new Error('You are not admin !'));
+            // }
+           const data = await Group.destroy({
                 where:{
-                    id
+                    id,
+                    authorId
                 }
             });
-            return response.returnSuccess(res, 'Deleted 1 group');
+            return response.returnSuccess(res, data);
         } catch (e) {
             return response.returnError(res, e);
         }
