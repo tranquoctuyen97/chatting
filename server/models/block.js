@@ -12,14 +12,11 @@ module.exports = (sequelize, DataTypes) => {
             authorId: {
                 type: DataTypes.UUID
             },
-            type: {
-                type: DataTypes.STRING
-            },
-            body: {
-                type: DataTypes.JSON
-            },
             groupId: {
                 type: DataTypes.UUID
+            },
+            userId: {
+               type: DataTypes.UUID
             },
             createdAt: {
                 type: DataTypes.DATE
@@ -63,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Block.associate = (models) => {
         Block.belongsTo(models.User, {
-            as: 'user-block',
+            as: 'user',
             foreignKey: 'userId',
             onDelete: 'CASCADE'
         });
@@ -73,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE'
         });
         Block.belongsTo(models.User, {
-            as: 'author-block',
+            as: 'author',
             foreignKey: 'authorId',
             onDelete: 'CASCADE'
         });

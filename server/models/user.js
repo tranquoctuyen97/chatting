@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
             address: {
                 type: DataTypes.ARRAY(DataTypes.STRING)
             },
+            role: {
+                type: DataTypes.ENUM,
+                values: ['normal', 'admin']
+            },
             createdAt: {
                 type: DataTypes.DATE
             },
@@ -74,6 +78,10 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.Group, {
             as: 'groups',
             foreignKey: 'authorId'
+        });
+        User.hasMany(models.Block, {
+           as: 'blocks',
+           foreignKey: 'authorId'
         });
     };
 

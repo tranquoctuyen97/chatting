@@ -62,12 +62,12 @@ module.exports = (sequelize, DataTypes) => {
 
     Message.associate = (models) => {
         Message.belongsTo(models.User, {
-            as: 'user-message',
+            as: 'user',
             foreignKey: 'authorId',
             onDelete: 'CASCADE'
         });
         Message.belongsTo(models.Group, {
-            as: 'group-message',
+            as: 'group',
             foreignKey: 'groupId',
             onDelete: 'CASCADE'
         });
