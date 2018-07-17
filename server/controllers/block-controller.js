@@ -19,7 +19,7 @@ export default class BlockController {
             return response.returnError(res, e);
         }
     };
-    createGroupBlock = async (req, res, next) => {
+    createGroupBlockUser = async (req, res, next) => {
         try {
             const  user = req.user;
             const { id ,groupId } = req.params;
