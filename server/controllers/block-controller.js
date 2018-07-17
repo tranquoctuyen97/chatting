@@ -23,21 +23,12 @@ export default class BlockController {
         try {
             const  user = req.user;
             const { id ,groupId } = req.params;
-            console.log(user.id);
-<<<<<<< HEAD
-=======
-            // console.log(groupId);
->>>>>>> origin/master
             const author = await Group.find({
                 where: {
                     id: groupId,
                     authorId: user.id
                 }
             });
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
             if (!author) {
                 return response.returnError(res, new Error('author is not admin group '));
             }
@@ -50,7 +41,5 @@ export default class BlockController {
             return response.returnError(res, e);
         }
     };
-
-
 
 }
