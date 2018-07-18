@@ -33,7 +33,8 @@ export default class BlockController {
                 return response.returnError(res, new Error('author is not admin group '));
             }
             const block = await Block.create({
-                authorId: id,
+                authorId: user.id,
+                userId: id,
                 groupId
             });
             return response.returnSuccess(res, block);
