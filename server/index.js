@@ -15,8 +15,8 @@ app
     .use(BodyParser.json())
     .use(BodyParser.urlencoded({extended: true}))
     .use(Express.static(Path.resolve(__dirname, '..', 'public'), {maxAge: 31557600000}))
-	.set('views', Path.join(__dirname, '..', 'public', 'views'))
-	.set('view engine', 'ejs');
+    .set('views', Path.join(__dirname, '..', 'public', 'views'))
+    .set('view engine', 'ejs');
 
 const routePath = `${__dirname}/routes/`;
 FS.readdirSync(routePath).forEach((file) => {

@@ -73,6 +73,35 @@ export default class UserController {
             return response.returnError(res, e);
         }
     };
+    updateActiveUser = async (req, res, next) => {
+        try {
+            const { isActive } = req.body;
+            const { id } = req.params;
+            if (id === undefined) {
+                return response.returnError(res, new Error('Id is invalid '));
+            }
+            if (isActive === undefined || isActive === null) {
+                return response.returnError(res, new Error('isActive is invalid '));
+            }
+            const users = await User.update(
+                {
+                    isActive
+                },
+                {
+                    where: {
+                        id
+                    },
+                    returning: true
+                }
+            );
+            if (users[0] === 0) {
+                return response.returnError(res, new Error('update user error'));
+            }
+            return response.returnSuccess(res, users[1]);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
+    };
 
     deleteUser = async (req, res, next) => {
         try {

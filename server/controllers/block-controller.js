@@ -19,6 +19,20 @@ export default class BlockController {
             return response.returnError(res, e);
         }
     };
+    getListBlockUser = async (req, res, next) => {
+        try {
+            const user = req.user;
+            const blocks = await Block.findAll({
+                where: {
+                    authorId: user.id,
+                    groupId: null
+                }
+            });
+            return response.returnSuccess(res, {blocks});
+        } catch (e) {
+            return response.returnError(res, e);
+        }
+    };
     createGroupBlockUser = async (req, res, next) => {
         try {
             const  user = req.user;

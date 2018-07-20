@@ -6,7 +6,8 @@ import {Authentication} from '../middlewares';
 module.exports = (app) => {
 
 	app.route('/blocks')
-		.post([Authentication.isAuth], blockController.createBlock);
+		.post([Authentication.isAuth], blockController.createBlock)
+		.get([Authentication.isAuth], blockController.getListBlockUser);
     app.route('/users/:id/block/:groupId')
         .post([Authentication.isAuth], blockController.createGroupBlockUser);
 
