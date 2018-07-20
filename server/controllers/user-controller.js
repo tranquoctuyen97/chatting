@@ -97,6 +97,7 @@ export default class UserController {
             if (users[0] === 0) {
                 return response.returnError(res, new Error('update user error'));
             }
+            console.log(users)
             return response.returnSuccess(res, users[1]);
         } catch (e) {
             return response.returnError(res, e);
