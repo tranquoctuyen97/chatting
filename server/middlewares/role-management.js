@@ -6,7 +6,7 @@ export default class  RoleManagement {
             const user = req.user;
             const role = user.role;
             console.log(role)
-            if (role == 'normal') {
+            if (role === 'normal') {
                 return response.returnError(res, new Error('You can not do this!'));
             }
             return next();
