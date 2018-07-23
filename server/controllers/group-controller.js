@@ -1,9 +1,10 @@
 'use strict';
-import {Group, User, Block, MemberGroup} from '../models';
+import {Group, User, Block, MemberGroup, Op} from '../models';
 import {response} from '../helpers';
 export default class UserController {
-    getListGroup = async (req, res, next) => {
+    getListActiveGroup = async (req, res, next) => {
         try {
+            const  user = req.user;
             const groups = await Group.findAll({
                 attributes: {
                     exclude: ['authorId']
@@ -12,6 +13,23 @@ export default class UserController {
                     {
                         model: User,
                         as: 'author'
+                    },
+                    {
+                        model: MemberGroup,
+                        as: 'members',
+                        where: {
+                            userId: user.id
+                        },
+                        attributes: []
+                    }
+                    ,
+                    {
+                        model: Block,
+                        as: 'blocks',
+                        where: {
+                            groupId: null
+                        },
+                        attributes: []
                     }
                 ],
                 order: [

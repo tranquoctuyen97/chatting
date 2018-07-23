@@ -97,7 +97,6 @@ export default class UserController {
             if (users[0] === 0) {
                 return response.returnError(res, new Error('update user error'));
             }
-            console.log(users)
             return response.returnSuccess(res, users[1]);
         } catch (e) {
             return response.returnError(res, e);
@@ -190,16 +189,20 @@ export default class UserController {
                 where: {
                     username
                 },
-                attributes: ['id', 'username', 'password', 'role']
+                attributes: ['id', 'username', 'password', 'role','isActive']
             });
             if (!user) {
                 return response.returnError(res, new Error('User is not exist'));
             }
+            if (user.isActive === false) {
+                return response.returnError(res, new Error('Your account has been locked'));
+            }
             const isPassword = await UserHelper.checkPassword(password, user.password);
+            console.log(isPassword);
             if (!isPassword) {
                 return response.returnError(res, new Error('Password is wrong '));
             }
-            const token = await JWTHelper.sign('Tran_Quoc_Tuyen_97', {
+            const token = await JWTHelper.sign({
                 id: user.id,
                 username: user.username,
                 role: user.role

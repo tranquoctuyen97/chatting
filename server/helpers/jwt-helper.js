@@ -1,13 +1,17 @@
 'use strict';
 import JWT from 'jsonwebtoken';
+import { privateKey, publicKey } from '../config'
 
 export default class JWTHelper {
 
-     async sign (privateKey, data) {
+     async sign (data) {
         return new Promise((resolve, reject) => {
-            JWT.sign(data, privateKey, {
-                expiresIn: 60 * 30
-            }, (err, token) => {
+            JWT.sign(data, privateKey,
+                {
+                    algorithm: 'RS256',
+                    expiresIn: 60 * 30
+                },
+                (err, token) => {
                 if (err) {
                     return reject(err);
                 }
@@ -16,9 +20,11 @@ export default class JWTHelper {
         });
     };
 
-     async verify (token, privateKey) {
+     async verify (token) {
         return new Promise((resolve, reject) => {
-            JWT.verify(token, privateKey, (err, data) => {
+            JWT.verify(token, publicKey,
+                { algorithm: 'RS256' },
+                (err, data) => {
                 if (err) {
                     return reject(err);
                 }

@@ -6,7 +6,7 @@ import {Authentication} from '../middlewares';
 module.exports = (app) => {
 
 	app.route('/groups')
-		.get([Authentication.isAuth],groupController.getListGroup)
+		.get([Authentication.isAuth],groupController.getListActiveGroup)
 		.post([Authentication.isAuth],groupController.createGroup);
     app.route('/group/:id')
 		.get([Authentication.isAuth],groupController.getOneGroup)

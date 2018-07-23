@@ -5,8 +5,6 @@ import {User} from '../models';
 export default class UserHelper  {
      checkPassword = (password, hash) => {
         return new Promise((resolve, reject) => {
-            console.log(password);
-            console.log(hash);
             Bcrypt.compare(password, hash, function (err, res) {
                 if (err) {
                     return reject(err);

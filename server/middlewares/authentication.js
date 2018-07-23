@@ -21,7 +21,7 @@ export default class  Authentication {
                 if (tokens.length !== 2) {
                     return response.returnError(res, new Error('Token is wrong format'));
                 }
-                user = await JWTHelper.verify(tokens[1], 'Tran_Quoc_Tuyen_97');
+                user = await JWTHelper.verify(tokens[1]);
             }
             req.user = user;
             return next();

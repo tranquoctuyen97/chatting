@@ -1,4 +1,4 @@
-import {Message, Group, User, Block} from '../models';
+import {Message, Group, User, Block, MemberGroup} from '../models';
 import {response} from '../helpers';
 export default class MessageController {
     getListMessage = async (req, res, next) => {
@@ -30,19 +30,53 @@ export default class MessageController {
         try {
             const user = req.user;
             const { type, groupId, body } = req.body;
-            const isBlock = await Block.find({
-                where: {
-                    groupId,
-                    authorId: user.id
-                }
-            });
+            let isBlocked ;
+            if (type === 'private') {
+                isBlocked= await MemberGroup.find({
+                    where: {
+                        groupId,
+                        userId: user.id
+                    },
+                    include: [
+                        {
+                            model: MemberGroup,
+                            as: 'members',
+                            where: {
+                                [Op.or]: [
+                                    {
+                                        userId: user.id
+                                    }
+                                ]
+
+                            },
+                            attributes: []
+                        },
+                        {
+                            model: Block,
+                            as: 'members',
+                            where: {
+
+                            }
+                        }
+                    ]
+                });
+            }else {
+                isBlocked = await Block.find({
+                    where: {
+                        groupId,
+                        authorId: user.id
+                    }
+                });
+            }
+
+
             if (groupId === undefined){
                 return response.returnError(res, new Error('groupId is invalid'));
             }
             if (!type) {
                 return response.returnError(res, new Error('type is invalid'));
             }
-            if (isBlock !== null){
+            if (isBlockedUser !== null){
                 return response.returnError(res, new Error('YOU are blocked'));
             }
             const message = await Message.create({

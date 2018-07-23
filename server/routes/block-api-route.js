@@ -9,7 +9,8 @@ module.exports = (app) => {
 		.post([Authentication.isAuth], blockController.createBlock)
 		.get([Authentication.isAuth], blockController.getListBlockUser);
     app.route('/users/:id/block/:groupId')
-        .post([Authentication.isAuth], blockController.createGroupBlockUser);
+        .post([Authentication.isAuth], blockController.createGroupBlockUser)
+		.delete([Authentication.isAuth], blockController.deleteGroupBlockUser);
 
 
 

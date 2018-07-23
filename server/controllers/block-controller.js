@@ -47,9 +47,34 @@ export default class BlockController {
                 return response.returnError(res, new Error('author is not admin group '));
             }
             const block = await Block.create({
-                authorId: user.id,
                 userId: id,
                 groupId
+            });
+            return response.returnSuccess(res, block);
+        } catch (e) {
+            return response.returnError(res, e);
+        }
+    };
+    deleteGroupBlockUser = async (req, res, next) => {
+        try {
+            const  user = req.user;
+            const { id ,groupId } = req.params;
+            const author = await Group.find({
+                where: {
+                    id: groupId,
+                    authorId: user.id
+                }
+            });
+            if (!author) {
+                return response.returnError(res, new Error('author is not admin group '));
+            }
+            const block = await Block.destroy({
+                where: {
+                    authorId: user.id,
+                    userId: id,
+                    groupId
+                }
+
             });
             return response.returnSuccess(res, block);
         } catch (e) {
