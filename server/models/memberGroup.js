@@ -65,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'groupId',
             onDelete: 'CASCADE'
         });
+
     };
 
 

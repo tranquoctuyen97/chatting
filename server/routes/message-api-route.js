@@ -9,7 +9,7 @@ module.exports = (app) => {
         .get([Authentication.isAuth], messageController.getListMessage)
         .post([Authentication.isAuth],messageController.createMessage);
     app.route('/message/:id')
-        .get(messageController.getMessageById)
+        .get([Authentication.isAuth], messageController.getMessageById)
         .put(messageController.updateMessage)
         .delete(messageController.deleteMessage);
 

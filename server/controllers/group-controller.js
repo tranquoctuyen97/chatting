@@ -129,7 +129,7 @@ export default class UserController {
                     {
                         model: MemberGroup,
                         as: 'members',
-                        required: false
+
                     }
                 ]
             });
@@ -138,5 +138,53 @@ export default class UserController {
             return response.returnError(res, e);
         }
     }
+    getListMembersGroup = async (req, res, next) => {
+        try {
+            const  { id } = req.params;
+            const member = await  Group.findAll({
+
+                include: [
+                    {
+                        model: MemberGroup,
+                        as: 'members',
+
+                    }
+                ],
+                where: {
+                    id
+                }
+        });
+        //     const member = await  MemberGroup.findAll({
+        //         where: {
+        //             groupId: id
+        //         },
+        //         include: [
+        //             {
+        //                 model: MemberGroup,
+        //                 as: 'members'
+        //
+        //             }
+        //         ]
+        //
+        //     });
+            // console.log(members)
+            response.returnSuccess(res, member);
+        } catch (e) {
+            response.returnSuccess(res, e);
+        }
+    };
+    JoinGroup = async (req, res, next) => {
+        try {
+            const  { id } = req.params;
+            const  user = req.user;
+            const  member = await  MemberGroup.create({
+                groupId: id,
+                userId: user.id
+            });
+            response.returnSuccess(res, member);
+        } catch (e) {
+
+        }
+    };
 
 }

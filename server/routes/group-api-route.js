@@ -11,8 +11,10 @@ module.exports = (app) => {
     app.route('/group/:id')
 		.get([Authentication.isAuth],groupController.getOneGroup)
     	.delete([Authentication.isAuth],groupController.deleteGroup)
-		.put([Authentication.isAuth],groupController.updateGroup);
+		.put([Authentication.isAuth],groupController.updateGroup)
+		.post([Authentication.isAuth],groupController.JoinGroup);
     app.route('/group/search/:name')
 		.get([Authentication.isAuth],groupController.getGroupByName);
-
+    app.route('/group/:id/members')
+        .get(groupController.getListMembersGroup)
 };
