@@ -19,7 +19,7 @@ module.exports = (app) => {
     app.route('/group/:id/members')
         .get(groupController.getListMembersGroup);
     app.route('/group/:id/leaveGroup')
-        .put(groupController.leaveGroup);
+        .put([Authentication.isAuth], groupController.leaveGroup);
     app.route('/group/:id/messages')
         .get(Authentication.isAuth, messageController.getListMessage);
 };
