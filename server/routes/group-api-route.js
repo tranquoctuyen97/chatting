@@ -1,7 +1,8 @@
 'use strict';
 
-import {groupController} from '../controllers/index';
+import {groupController} from '../controllers';
 import {Authentication} from '../middlewares';
+import {messageController} from "../controllers";
 
 module.exports = (app) => {
 
@@ -12,9 +13,13 @@ module.exports = (app) => {
 		.get([Authentication.isAuth],groupController.getOneGroup)
     	.delete([Authentication.isAuth],groupController.deleteGroup)
 		.put([Authentication.isAuth],groupController.updateGroup)
-		.post([Authentication.isAuth],groupController.JoinGroup);
+		.post([Authentication.isAuth],groupController.joinGroup);
     app.route('/group/search/:name')
 		.get([Authentication.isAuth],groupController.getGroupByName);
     app.route('/group/:id/members')
-        .get(groupController.getListMembersGroup)
+        .get(groupController.getListMembersGroup);
+    app.route('/group/:id/leaveGroup')
+        .put(groupController.leaveGroup);
+    app.route('/group/:id/messages')
+        .get(Authentication.isAuth, messageController.getListMessage);
 };

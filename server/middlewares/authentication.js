@@ -1,4 +1,3 @@
-
 'user strict';
 import {response, JWTHelper} from '../helpers';
 export default class  Authentication {
@@ -15,7 +14,7 @@ export default class  Authentication {
                 authorization = req.body.token;
             }
             if (token) {
-                user =  await JWTHelper.verify(token, 'Tran_Quoc_Tuyen_97');
+                user =  await JWTHelper.verify(token);
             } else if (authorization) {
                 const tokens = authorization.split('Bearer ');
                 if (tokens.length !== 2) {

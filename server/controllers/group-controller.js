@@ -9,6 +9,9 @@ export default class UserController {
                 attributes: {
                     exclude: ['authorId']
                 },
+                where: {
+                    [Op.or]: [{authorId: user.id}]
+                },
                 include: [
                     {
                         model: User,
@@ -18,7 +21,8 @@ export default class UserController {
                         model: MemberGroup,
                         as: 'members',
                         where: {
-                            userId: user.id
+                            userId: user.id,
+                            isExist: true
                         },
                         attributes: []
                     }
@@ -29,8 +33,10 @@ export default class UserController {
                         where: {
                             groupId: null
                         },
+                        required: false,
                         attributes: []
-                    }
+                    },
+
                 ],
                 order: [
                     ['createdAt', 'DESC']
@@ -141,39 +147,36 @@ export default class UserController {
     getListMembersGroup = async (req, res, next) => {
         try {
             const  { id } = req.params;
-            const member = await  Group.findAll({
-
+            const member = await  Group.find({
+                attributes: ['id','name'],
                 include: [
                     {
                         model: MemberGroup,
                         as: 'members',
-
+                        where: {
+                            isExist: true
+                        }
+                    },
+                    {
+                        model: Block,
+                        as: 'blocks',
+                        required: false,
+                        where: {
+                            userId: null
+                        },
+                        attributes: []
                     }
                 ],
                 where: {
                     id
                 }
         });
-        //     const member = await  MemberGroup.findAll({
-        //         where: {
-        //             groupId: id
-        //         },
-        //         include: [
-        //             {
-        //                 model: MemberGroup,
-        //                 as: 'members'
-        //
-        //             }
-        //         ]
-        //
-        //     });
-            // console.log(members)
             response.returnSuccess(res, member);
         } catch (e) {
             response.returnSuccess(res, e);
         }
     };
-    JoinGroup = async (req, res, next) => {
+    joinGroup = async (req, res, next) => {
         try {
             const  { id } = req.params;
             const  user = req.user;
@@ -183,8 +186,27 @@ export default class UserController {
             });
             response.returnSuccess(res, member);
         } catch (e) {
-
+            response.returnError(res, e);
         }
     };
+    leaveGroup = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const  user = req.user;
+            const  update = await  MemberGroup.update({
+                isExist: false,
+                where: {
+                    groupId: id,
+                    userId: user.id
+                }
+            });
+            if (update[0] === 0) {
+                response.returnError(res, new Error('Leave Group Error !'));
+            }
+            response.returnSuccess(res, update[1]);
+        } catch (e) {
+            response.returnError(res, e);
+        }
+    }
 
 }

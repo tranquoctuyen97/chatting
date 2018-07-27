@@ -6,12 +6,13 @@ import {Authentication} from "../middlewares";
 module.exports = (app) => {
 
     app.route('/messages')
-        .get([Authentication.isAuth], messageController.getListMessage)
         .post([Authentication.isAuth],messageController.createMessage);
     app.route('/message/:id')
-        .get([Authentication.isAuth], messageController.getMessageById)
-        .put(messageController.updateMessage)
-        .delete(messageController.deleteMessage);
+        .put([Authentication.isAuth], messageController.updateMessage)
+        .delete([Authentication.isAuth], messageController.deleteMessage);
+    app.route('/group/:id/clearConversation')
+        .put([Authentication.isAuth], messageController.clearConversation);
+
 
 
 };

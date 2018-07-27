@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
             },
             deletedAt: {
                 type: DataTypes.DATE
+            },
+            isExist: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: true
             }
         },
         {
@@ -61,8 +65,8 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE'
         });
         MemberGroup.belongsTo(models.Group, {
-            as: 'group-member',
             foreignKey: 'groupId',
+            as: 'group',
             onDelete: 'CASCADE'
         });
 
