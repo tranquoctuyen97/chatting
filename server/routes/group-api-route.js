@@ -12,14 +12,13 @@ module.exports = (app) => {
     app.route('/group/:id')
 		.get([Authentication.isAuth],groupController.getOneGroup)
     	.delete([Authentication.isAuth],groupController.deleteGroup)
-		.put([Authentication.isAuth],groupController.updateGroup)
-		.post([Authentication.isAuth],groupController.joinGroup);
+		.put([Authentication.isAuth],groupController.updateGroup);
     app.route('/group/search/:name')
 		.get([Authentication.isAuth],groupController.getGroupByName);
     app.route('/group/:id/members')
         .get(groupController.getListMembersGroup);
     app.route('/group/:id/leaveGroup')
         .put([Authentication.isAuth], groupController.leaveGroup);
-    app.route('/group/:id/messages')
-        .get(Authentication.isAuth, messageController.getListMessage);
+    app.route('group/:id/invite')
+        .post([Authentication.isAuth],groupController.joinGroup);
 };

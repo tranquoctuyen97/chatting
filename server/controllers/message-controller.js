@@ -179,37 +179,5 @@ export default class MessageController {
             return response.returnError(res, e);
         }
     };
-    clearConversation = async(res, req, next) => {
-        try {
-            const { id } = req.params;
-            const user = req.user;
-            const isMember = await Group.find({
-                attributes: [],
-                include: [
-                    {
-                        model: MemberGroup,
-                        as: 'members',
-                        where: {
-                            userId: user.id
-                        }
-                    }
-                ]
-            });
-            if (!isMember){
-                return response.returnError(res, new Error('you are not member in group'));
-            }
-            const  message = await Message.update({
-                deleted: Date.now(),
-                where: {
-                    authorId: user.id
-                }
-            });
-            if (message[0] === 0) {
-                return response.returnError(res, new Error('Clear Conversation Error !'));
-            }
-            return response.returnSuccess(res, message[1]);
-        } catch (e) {
-            return response.returnError(res, e);
-        }
-    }
+
 }
