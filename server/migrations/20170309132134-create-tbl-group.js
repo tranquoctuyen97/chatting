@@ -19,7 +19,15 @@ module.exports = {
                 type: DataTypes.STRING
             },
             type: {
-                type: DataTypes.STRING
+                type: DataTypes.STRING,
+            },
+            partnerId: {
+                type: DataTypes.UUID,
+                references: {
+                    model: 'User',
+                    key: 'id'
+                },
+                onDelete: 'CASCADE'
             },
             avatar: {
                 type: DataTypes.STRING

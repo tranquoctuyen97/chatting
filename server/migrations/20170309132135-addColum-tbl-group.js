@@ -3,16 +3,19 @@
 module.exports = {
     up: (queryInterface, Sequelize) => {
         queryInterface.addColumn(
-            'Message',
-            'deleted',
-            Sequelize.DATE
+            'Group',
+            'type',
+             Sequelize.ENUM('private', 'group')
+
         );
     },
 
     down: (queryInterface, Sequelize) => {
         queryInterface.removeColumn(
-            'Message',
-            'deleted'
+            'Group',
+            'type',
+               Sequelize.STRING
+
         );
     }
 };
