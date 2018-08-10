@@ -19,7 +19,8 @@ module.exports = {
                 type: DataTypes.STRING
             },
             type: {
-                type: DataTypes.STRING,
+                type: DataTypes.ENUM,
+                values: ['private', 'group']
             },
             partnerId: {
                 type: DataTypes.UUID,

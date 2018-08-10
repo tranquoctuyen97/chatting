@@ -8,7 +8,7 @@ module.exports = (app) => {
 
 	app.route('/users')
 		.get([Authentication.isAuth], userController.getListUser)
-		.post([Authentication.isAuth], userController.createUser);
+		.post( userController.createUser);
     app.route('/user/:id')
         .get([Authentication.isAuth], userController.getOneUser)
         .put([Authentication.isAuth], userController.updateUser)

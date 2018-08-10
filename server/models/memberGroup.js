@@ -25,10 +25,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             deletedAt: {
                 type: DataTypes.DATE
-            },
-            isExist: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: true
             }
         },
         {

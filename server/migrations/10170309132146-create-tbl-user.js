@@ -24,6 +24,10 @@ module.exports = {
                     min: 10
                 }
             },
+            role: {
+                type: DataTypes.ENUM,
+                values: ['normal', 'admin']
+            },
             avatar: {
                 type: DataTypes.STRING
             },

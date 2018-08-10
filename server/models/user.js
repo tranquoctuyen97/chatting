@@ -40,7 +40,8 @@ module.exports = (sequelize, DataTypes) => {
             },
             role: {
                 type: DataTypes.ENUM,
-                values: ['normal', 'admin']
+                values: ['normal', 'admin'],
+                defaultValue: 'normal'
             },
             createdAt: {
                 type: DataTypes.DATE
