@@ -9,7 +9,7 @@ export default class JWTHelper {
             JWT.sign(data, privateKey,
                 {
                     algorithm: 'RS256',
-                    expiresIn: 60 * 30
+                    expiresIn: '100d'
                 },
                 (err, token) => {
                 if (err) {

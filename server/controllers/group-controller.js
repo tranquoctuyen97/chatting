@@ -6,28 +6,29 @@ import {memberGroupRepository, groupRepository} from '../repositories'
 export default class UserController {
     getListActiveGroup = async (req, res, next) => {
         try {
-            const user = req.user;
-            const groups = memberGroupRepository.getAll({
+            const memberGroups = await memberGroupRepository.getAll({
                 where: {
-                    userId: user.id
+                    userId: req.user.id
                 },
                 attributes: ['groupId']
             });
-            const groupIds = groups.map(item => item.groupId);
-            const listActiveGroups = await groupRepository.getAll({
-                attributes: {
-                    exclude: ['authorId']
-                },
-                where: {
-                    id: groupIds
-                },
-                order: [
-                    ['createdAt', 'DESC']
-                ],
-            });
-            response.returnSuccess(res, listActiveGroups);
+            const groupIds = memberGroups.map(item => item.groupId);
+            const groups = await groupRepository.getAll(
+                    {
+                        where: {
+                            id: groupIds
+                        },
+                        attributes: {
+                            exclude: ['authorId']
+                        },
+                        order: [
+                            ['createdAt', 'DESC']
+                        ]
+                    }
+                );
+            return response.returnSuccess(res, groups);
         } catch (e) {
-            response.returnError(res, e);
+            return response.returnError(res, e);
         }
     };
     createGroup = async (req, res, next) => {

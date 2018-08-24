@@ -10,7 +10,7 @@ module.exports = (app) => {
     app.route('/message/:id')
         .put([Authentication.isAuth], messageController.updateMessage)
         .delete([Authentication.isAuth], messageController.deleteMessage);
-    app.route('/group/:id/messages')
+    app.route('/messages/groups/:id')
         .get(Authentication.isAuth, messageController.getListMessage);
 
 

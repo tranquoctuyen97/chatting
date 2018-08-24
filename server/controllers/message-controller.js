@@ -5,42 +5,31 @@ export default class MessageController {
         try {
             const { id } = req.params;
             const  user = req.user;
-            const isDeleted = await  Message.find({
-                attributes: ['authorId', 'deleted'],
-                where: {
-                    authorId: user.id,
-                    deleted: {
-                        [Op.not]: null
-                    }
-                }
-            });
             const messages = await Message.findAll({
                 attributes: {
-                    exclude: ['authorId']
+                    exclude: [ 'groupId' ]
                 },
-                where: {
-                    createdAt: {
-                        [Op.gt]: isDeleted.deleted
-                    }
-                },
+                distinct: true,
                 include: [
                     {
                         model:Group,
                         as: 'group',
                         where: {
                             id: id
-                        }
+                        },
+                        attributes: []
                     },
                     {
                         model: User,
-                        as: 'user'
+                        as: 'user',
+                        attributes: ['avatar','username' ]
                     }
                 ],
                 order: [
-                    ['createdAt','DESC']
+                    ['createdAt','ASC']
                 ]
             });
-            return response.returnSuccess(res, isDeleted);
+            return response.returnSuccess(res, messages);
         } catch (e) {
             return response.returnError(res, e);
         }
@@ -49,61 +38,53 @@ export default class MessageController {
         try {
             const user = req.user;
             const { type, groupId, body } = req.body;
-            let isBlocked ;
-            if (type === 'private') {
-                const author = await Group.find({
-                    attributes: ['authorId'],
-                    where: {
-                        id: groupId
-                    }
-                });
-                isBlocked = await Group.find({
-                    attributes: [],
-                    include: [
-                        {
-                            model: MemberGroup,
-                            as: 'members',
-                            where: {
-                                userId: user.id
-                            },
-                            required: false,
-                        },
-                        {
-                            model: Block,
-                            as: 'blocks',
-                            where: {
-                                userId: user.id,
-                                authorId: author.authorId,
-                                groupId: null
-                            },
-                            required: false,
-                        },
-                    ]
-                });
-            }
-            if (type === 'group') {
-                isBlocked = await Group.find({
-                    attributes: [],
-                    include: [
-                        {
-                            model: MemberGroup,
-                            as: 'members',
-                            where: {
-                                userId: user.id
-                            },
-                            required: false,
-                        },
-                        {
-                            model: Block,
-                            as: 'blocks',
-                            where: {
-                                userId: user.id,
-                                groupId: groupId
-                            }
-                        },
-                    ]
-                });
-            }
+            // let isBlocked ;
+            // if (type === 'private') {
+            //     const author = await Group.find({
+            //         attributes: ['authorId'],
+            //         where: {
+            //             id: groupId
+            //         }
+            //     });
+            //     isBlocked = await Group.find({
+            //         attributes: [],
+            //         include: [
+            //             {
+            //                 model: MemberGroup,
+            //                 as: 'members',
+            //                 where: {
+            //                     userId: user.id
+            //                 },
+            //                 required: false,
+            //             },
+            //             {
+            //                 model: Block,
+            //                 as: 'blocks',
+            //                 where: {
+            //                     userId: user.id,
+            //                     authorId: author.authorId,
+            //                     groupId: null
+            //                 },
+            //                 required: false,
+            //             },
+            //         ]
+            //     });
+            // }
+            // if (type === 'group') {
+            //     isBlocked = await Group.find({
+            //         attributes: [],
+            //         include: [
+            //             {
+            //                 model: MemberGroup,
+            //                 as: 'members',
+            //                 where: {
+            //                     userId: user.id
+            //                 },
+            //                 required: false,
+            //             }
+            //         ]
+            //     });
+            // }
 
             if (groupId === undefined){
                 return response.returnError(res, new Error('groupId is invalid'));
@@ -112,12 +93,12 @@ export default class MessageController {
                 return response.returnError(res, new Error('type is invalid'));
             }
 
-            if (isBlocked.members.length === 0){
-                return response.returnError(res, new Error('YOU are not member in group !'));
-            }
-            if (isBlocked.blocks.length !== 0 ){
-                return response.returnError(res, new Error('YOU are blocked'));
-            }
+            // if (isBlocked.members.length === 0){
+            //     return response.returnError(res, new Error('YOU are not member in group !'));
+            // }
+            // if (isBlocked.blocks.length !== 0 ){
+            //     return response.returnError(res, new Error('YOU are blocked'));
+            // }
             const message = await Message.create({
                 authorId: user.id,
                 type,

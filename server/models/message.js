@@ -31,9 +31,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             deletedAt: {
                 type: DataTypes.DATE
-            },
-            deleted: {
-                type: DataTypes.DATE
             }
         },
         {
