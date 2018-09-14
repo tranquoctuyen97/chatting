@@ -26,7 +26,7 @@
     "winston-daily-rotate-file": "^3.2.3"
   },
   "scripts": {
-    "start": "nodemon server/index.js --exec babel-node --presets env,stage-2",
+    "start": "nodemon server/build.js ",
     "pm2_start": "pm2 start --interpreter babel-node server/index.js --name authentication-service",
     "pm2_stop": "pm2 stop --interpreter babel-node server/index.js",
     "pm2_docker_start": "webpack --config webpack.config.prod.js && pm2-docker start --interpreter babel-node server/index.js --name authentication-service",

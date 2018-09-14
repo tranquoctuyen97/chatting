@@ -1,4 +1,5 @@
 import {Message, Group, User, Block, MemberGroup, Op} from '../models';
+import {me} from '../repositories'
 import {response} from '../helpers';
 export default class MessageController {
     getListMessage = async (req, res, next) => {
@@ -21,7 +22,7 @@ export default class MessageController {
                     },
                     {
                         model: User,
-                        as: 'user',
+                        as: 'author',
                         attributes: ['avatar','username' ]
                     }
                 ],
