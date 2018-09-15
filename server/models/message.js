@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Message.associate = (models) => {
         Message.belongsTo(models.User, {
-            as: 'user',
+            as: 'author',
             foreignKey: 'authorId',
             onDelete: 'CASCADE'
         });

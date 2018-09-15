@@ -1,35 +1,31 @@
 import {Message, Group, User, Block, MemberGroup, Op} from '../models';
-import {me} from '../repositories'
+import {messageRepository} from '../repositories'
 import {response} from '../helpers';
 export default class MessageController {
     getListMessage = async (req, res, next) => {
         try {
             const { id } = req.params;
+            const {page, limit } = req.query;
+            const offset = (page - 1) * limit;
             const  user = req.user;
-            const messages = await Message.findAll({
-                attributes: {
-                    exclude: [ 'groupId' ]
+            const  messages = await  messageRepository.getAll({
+                offset,
+                limit,
+                where: {
+                    groupId: id
                 },
-                distinct: true,
                 include: [
-                    {
-                        model:Group,
-                        as: 'group',
-                        where: {
-                            id: id
-                        },
-                        attributes: []
-                    },
                     {
                         model: User,
                         as: 'author',
-                        attributes: ['avatar','username' ]
                     }
                 ],
                 order: [
-                    ['createdAt','ASC']
-                ]
+                    ['createdAt','DESC']
+                ],
+
             });
+
             return response.returnSuccess(res, messages);
         } catch (e) {
             return response.returnError(res, e);
@@ -37,55 +33,9 @@ export default class MessageController {
     };
     createMessage = async (req, res, next) => {
         try {
+            const   groupId = req.params.id;
             const user = req.user;
-            const { type, groupId, body } = req.body;
-            // let isBlocked ;
-            // if (type === 'private') {
-            //     const author = await Group.find({
-            //         attributes: ['authorId'],
-            //         where: {
-            //             id: groupId
-            //         }
-            //     });
-            //     isBlocked = await Group.find({
-            //         attributes: [],
-            //         include: [
-            //             {
-            //                 model: MemberGroup,
-            //                 as: 'members',
-            //                 where: {
-            //                     userId: user.id
-            //                 },
-            //                 required: false,
-            //             },
-            //             {
-            //                 model: Block,
-            //                 as: 'blocks',
-            //                 where: {
-            //                     userId: user.id,
-            //                     authorId: author.authorId,
-            //                     groupId: null
-            //                 },
-            //                 required: false,
-            //             },
-            //         ]
-            //     });
-            // }
-            // if (type === 'group') {
-            //     isBlocked = await Group.find({
-            //         attributes: [],
-            //         include: [
-            //             {
-            //                 model: MemberGroup,
-            //                 as: 'members',
-            //                 where: {
-            //                     userId: user.id
-            //                 },
-            //                 required: false,
-            //             }
-            //         ]
-            //     });
-            // }
+            const { type, body } = req.body;
 
             if (groupId === undefined){
                 return response.returnError(res, new Error('groupId is invalid'));
@@ -94,12 +44,6 @@ export default class MessageController {
                 return response.returnError(res, new Error('type is invalid'));
             }
 
-            // if (isBlocked.members.length === 0){
-            //     return response.returnError(res, new Error('YOU are not member in group !'));
-            // }
-            // if (isBlocked.blocks.length !== 0 ){
-            //     return response.returnError(res, new Error('YOU are blocked'));
-            // }
             const message = await Message.create({
                 authorId: user.id,
                 type,

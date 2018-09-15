@@ -33,7 +33,7 @@ socket.on('messages', function (responseData) {
 socket.emit('rooms', {
 	action: 'join',
 	data: {
-		roomName
+        groupId: 'c097413e-9994-478b-ae36-3e62a660d926'
 	}
 }, function(error, responseData) {
 	if (error) {
