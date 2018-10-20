@@ -3,6 +3,11 @@ import {response} from '../helpers';
 export default class  RoleManagement {
     static verifyRole = async (req, res, next) => {
         try {
+
+
+
+
+            
             const user = req.user;
             const role = user.role;
             if (role === 'normal') {
